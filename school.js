@@ -6,12 +6,12 @@ var schoolTable = dc.dataTable('.dc-data-table');
 d3.csv('race.csv', function (data) {
 	var ndx = crossfilter(data);
     // var all = ndx.groupAll();
-    var genderDimension = ndx.dimension(function (d) {
-        return d.LEA_STATE;
-    });
-    var genderGroup = raceDimension.group().reduceSum(function(d) {
-  	return d.GenderValue;
-	});
+ //    var genderDimension = ndx.dimension(function (d) {
+ //        return d.LEA_STATE;
+ //    });
+ //    var genderGroup = raceDimension.group().reduceSum(function(d) {
+ //  	return d.GenderValue;
+	// });
 
     var raceDimension = ndx.dimension(function(d){
     	return d.Race;
@@ -20,17 +20,17 @@ d3.csv('race.csv', function (data) {
   	return d.Value;
 	});
 
-	genderChart
-    .width(768)
-    .height(480)
-    .slicesCap(8)
-    .innerRadius(100)
-    .dimension(genderDimension)
-    .group(genderGroup)
-    .legend(dc.legend()) 
-    .ordinalColors(['#bf5b17','#f0027f','#7fc97f','#beaed4','#ffff99','#386cb0','#fdc086']);
+	// genderChart
+ //    .width(768)
+ //    .height(480)
+ //    .slicesCap(8)
+ //    .innerRadius(100)
+ //    .dimension(genderDimension)
+ //    .group(genderGroup)
+ //    .legend(dc.legend()) 
+ //    .ordinalColors(['#bf5b17','#f0027f','#7fc97f','#beaed4','#ffff99','#386cb0','#fdc086']);
          
-    genderChart.render();
+ //    genderChart.render();
 
     
     raceChart
