@@ -60,8 +60,8 @@ var statesJson = {"type":"FeatureCollection","features":[
 ]};
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
 var labels = {"type":"FeatureCollection","features":[
-{"type":"Feature","id":"01","geometry":{"type":"Point","coordinates":[-86.766233,33.001471]},"properties":{"name":"Alabama","population":4447100}},
-{"type":"Feature","id":"02","geometry":{"type":"Point","coordinates":[-148.716968,61.288254]},"properties":{"name":"Alaska","population":626932}},
+{"type":"Feature","id":"01","geometry":{"type":"Point","coordinates":[-86.766233,33.001471]},"properties":{"name":"AL","population":4447100}},
+{"type":"Feature","id":"02","geometry":{"type":"Point","coordinates":[-148.716968,61.288254]},"properties":{"name":"AK","population":626932}},
 {"type":"Feature","id":"04","geometry":{"type":"Point","coordinates":[-111.828711,33.373506]},"properties":{"name":"Arizona","population":5130632}},
 {"type":"Feature","id":"05","geometry":{"type":"Point","coordinates":[-92.576816,35.080251]},"properties":{"name":"Arkansas","population":2673400}},
 {"type":"Feature","id":"06","geometry":{"type":"Point","coordinates":[-119.355165,35.458606]},"properties":{"name":"California","population":33871648}},
@@ -121,15 +121,24 @@ var labels = {"type":"FeatureCollection","features":[
 
 
 
-d3.csv('race.csv', function (data) {
+d3.csv('racegender.csv', function (data) {
 	var ndx = crossfilter(data);
-    // var all = ndx.groupAll();
+    var all = ndx.groupAll();
  //    var genderDimension = ndx.dimension(function (d) {
  //        return d.LEA_STATE;
  //    });
  //    var genderGroup = raceDimension.group().reduceSum(function(d) {
  //  	return d.GenderValue;
 	// });
+
+	var genderDimension = ndx.dimension(function(d){
+    	return d.Gender;
+    });
+
+	var genderGroup = genderDimension.group().reduceSum(function(d) {
+  	return d.GenderValue;
+	});
+
 
 	var states = ndx.dimension(function (d) {
             return d["LEA_STATE"];
@@ -145,17 +154,17 @@ d3.csv('race.csv', function (data) {
   	return d.Value;
 	});
 
-	// genderChart
- //    .width(768)
- //    .height(480)
- //    .slicesCap(8)
- //    .innerRadius(100)
- //    .dimension(genderDimension)
- //    .group(genderGroup)
- //    .legend(dc.legend()) 
- //    .ordinalColors(['#bf5b17','#f0027f','#7fc97f','#beaed4','#ffff99','#386cb0','#fdc086']);
+	genderChart
+    .width(400)
+    .height(480)
+    .slicesCap(2)
+    .innerRadius(100)
+    .dimension(genderDimension)
+    .group(genderGroup)
+    .legend(dc.legend()) 
+    .ordinalColors(['#7fc97f','#beaed4']);
          
- //    genderChart.render();
+    genderChart.render();
 
  	usChart.width(990)
                     .height(500)
@@ -171,11 +180,27 @@ d3.csv('race.csv', function (data) {
 
 
     usChart.render();
+
+    // var labelG = d3.select("svg")
+    //             .append("svg:g") 
+    //             .attr("id", "labelG") 
+    //             .attr("class", "Title");
+        
+    // // var project = d3.geo.albersUsa(); 
+        
+    //    labelG.selectAll("text") 
+    //        .data(labels.features) 
+    //        .enter().append("svg:text") 
+    //        .text(function(d){return d.properties.name;}) 
+    //        .attr("x", function(d){return project(d.geometry.coordinates)[0];}) 
+    //        .attr("y", function(d){return project(d.geometry.coordinates)[1];}) 
+    //        .attr("dx", "-1em"); 
+
     raceChart
-    .width(768)
+    .width(400)
     .height(480)
-    .slicesCap(8)
-    .innerRadius(100)
+    .slicesCap(7)
+    .innerRadius(50)
     .dimension(raceDimension)
     .group(raceGroup)
     .legend(dc.legend()) 
