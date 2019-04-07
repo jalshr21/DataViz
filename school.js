@@ -1,8 +1,8 @@
 var usChart = dc.geoChoroplethChart("#us-chart");		
 var genderChart = dc.pieChart('#gender-chart');
 var raceChart = dc.pieChart('#race-chart');
-var subjectChart = dc.barChart('#subject-chart');
-var schoolTable = dc.dataTable('.dc-data-table');
+// var subjectChart = dc.barChart('#subject-chart');
+// var schoolTable = dc.dataTable('.dc-data-table');
 
 
 var statesJson = {"type":"FeatureCollection","features":[
@@ -125,15 +125,7 @@ var labels = {"type":"FeatureCollection","features":[
 d3.csv('racegender.csv', function (data) {
 	var ndx = crossfilter(data);
     var all = ndx.groupAll();
- //    var genderDimension = ndx.dimension(function (d) {
- //        return d.LEA_STATE;
- //    });
- //    var genderGroup = raceDimension.group().reduceSum(function(d) {
- //  	return d.GenderValue;
-	// });
-
-	
-
+ 
 	var states = ndx.dimension(function (d) {
             return d["LEA_STATE"];
         });
@@ -141,23 +133,22 @@ d3.csv('racegender.csv', function (data) {
             return d["TOT_ENR"];
         });
 
-	var genderDimension = ndx.dimension(function(d){
-    	return d.Gender;
-    });
-
-	var genderGroup = genderDimension.group().reduceSum(function(d) {
-  	return d.GenderValue/7;
-	});
-
-
     var raceDimension = ndx.dimension(function(d){
     	return d.Race;
     });
 	var raceGroup = raceDimension.group().reduceSum(function(d) {
-  	return d.Value/2;
+  		return d.Value/2;
 	});
 
+	var genderDimension = ndx.dimension(function(d){
+    	return d.Gender;
+    });
 
+	// var genderGroup = genderDimension.group().reduceCount();
+
+	var genderGroup = genderDimension.group().reduceSum(function(d) {
+  		return Math.round(d.GenderValue);
+	});
 
 	
  	usChart.width(990)
@@ -166,14 +157,10 @@ d3.csv('racegender.csv', function (data) {
            .group(stateRaisedSum)                
            .colors(d3.scale.quantize().range(
            ["#E2F2FF", "#C4E4FF", "#9ED2FF", "#81C5FF", "#6BBAFF", "#51AEFF", "#36A2FF", "#1E96FF", "#0089FF", "#0061B5"]))
-           .colorDomain([0, 200])
-           .colorCalculator(function (d) { return d ? usChart.colors()(d) : '#ccc'; })	
+           .colorDomain([2400000, 15000000])
            .overlayGeoJson(statesJson.features, "state", function (d) {
            return d.properties.name;
            });
-
-
-    
 
     var labelG = d3.select("svg")
                 .append("svg:g") 
@@ -191,7 +178,8 @@ d3.csv('racegender.csv', function (data) {
            .attr("dx", "-1em"); 
 
 
-    usChart.render();       
+    usChart.render();  
+
     genderChart
     .width(400)
     .height(480)
@@ -201,10 +189,21 @@ d3.csv('racegender.csv', function (data) {
     .group(genderGroup)
     .legend(dc.legend()) 
     .ordinalColors(['#7fc97f','#beaed4']);
-         
     // genderChart.render();
        
+    // subjectChart
+    // .width(400)
+    // .height(480)
+    // .x(d3.scale.linear().range([0, 10000000]))
+    // .yAxisLabel("Male vs. Female")
+    // .dimension(genderDimension)
+    // .group(genderGroup)
+    // .centerBar(true)
+    // .gap(1)
+    // .ordinalColors(['#7fc97f','#beaed4']);
     
+    // subjectChart.render();
+
     raceChart
     .width(400)
     .height(480)
