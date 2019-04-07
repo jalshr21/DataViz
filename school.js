@@ -1,8 +1,9 @@
+var usChart = dc.geoChoroplethChart("#us-chart");		
 var genderChart = dc.pieChart('#gender-chart');
 var raceChart = dc.pieChart('#race-chart');
 var subjectChart = dc.barChart('#subject-chart');
 var schoolTable = dc.dataTable('.dc-data-table');
-var usChart = dc.geoChoroplethChart("#us-chart");
+
 
 var statesJson = {"type":"FeatureCollection","features":[
 {"type":"Feature","id":"01","properties":{"name":"AL"},"geometry":{"type":"Polygon","coordinates":[[[-87.359296,35.00118],[-85.606675,34.984749],[-85.431413,34.124869],[-85.184951,32.859696],[-85.069935,32.580372],[-84.960397,32.421541],[-85.004212,32.322956],[-84.889196,32.262709],[-85.058981,32.13674],[-85.053504,32.01077],[-85.141136,31.840985],[-85.042551,31.539753],[-85.113751,31.27686],[-85.004212,31.003013],[-85.497137,30.997536],[-87.600282,30.997536],[-87.633143,30.86609],[-87.408589,30.674397],[-87.446927,30.510088],[-87.37025,30.427934],[-87.518128,30.280057],[-87.655051,30.247195],[-87.90699,30.411504],[-87.934375,30.657966],[-88.011052,30.685351],[-88.10416,30.499135],[-88.137022,30.318396],[-88.394438,30.367688],[-88.471115,31.895754],[-88.241084,33.796253],[-88.098683,34.891641],[-88.202745,34.995703],[-87.359296,35.00118]]]}},
@@ -131,14 +132,7 @@ d3.csv('racegender.csv', function (data) {
  //  	return d.GenderValue;
 	// });
 
-	var genderDimension = ndx.dimension(function(d){
-    	return d.Gender;
-    });
-
-	var genderGroup = genderDimension.group().reduceSum(function(d) {
-  	return d.GenderValue;
-	});
-
+	
 
 	var states = ndx.dimension(function (d) {
             return d["LEA_STATE"];
@@ -147,55 +141,70 @@ d3.csv('racegender.csv', function (data) {
             return d["TOT_ENR"];
         });
 
+	var genderDimension = ndx.dimension(function(d){
+    	return d.Gender;
+    });
+
+	var genderGroup = genderDimension.group().reduceSum(function(d) {
+  	return d.GenderValue/7;
+	});
+
+
     var raceDimension = ndx.dimension(function(d){
     	return d.Race;
     });
 	var raceGroup = raceDimension.group().reduceSum(function(d) {
-  	return d.Value;
+  	return d.Value/2;
 	});
 
-	genderChart
+
+
+	
+ 	usChart.width(990)
+           .height(500)
+           .dimension(states)
+           .group(stateRaisedSum)                
+           .colors(d3.scale.quantize().range(
+           ["#E2F2FF", "#C4E4FF", "#9ED2FF", "#81C5FF", "#6BBAFF", "#51AEFF", "#36A2FF", "#1E96FF", "#0089FF", "#0061B5"]))
+           .colorDomain([0, 200])
+           .colorCalculator(function (d) { return d ? usChart.colors()(d) : '#ccc'; })	
+           .overlayGeoJson(statesJson.features, "state", function (d) {
+           return d.properties.name;
+           });
+
+
+    
+
+    var labelG = d3.select("svg")
+                .append("svg:g") 
+                .attr("id", "labelG") 
+                .attr("class", "Title");
+        
+    var project = d3.geo.albersUsa(); 
+        
+       labelG.selectAll("text") 
+           .data(labels.features) 
+           .enter().append("svg:text") 
+           .text(function(d){return d.properties.name;}) 
+           .attr("x", function(d){return project(d.geometry.coordinates)[0];}) 
+           .attr("y", function(d){return project(d.geometry.coordinates)[1];}) 
+           .attr("dx", "-1em"); 
+
+
+    usChart.render();       
+    genderChart
     .width(400)
     .height(480)
-    .slicesCap(2)
-    .innerRadius(100)
+    .slicesCap(3)
+    .innerRadius(50)
     .dimension(genderDimension)
     .group(genderGroup)
     .legend(dc.legend()) 
     .ordinalColors(['#7fc97f','#beaed4']);
          
-    genderChart.render();
-
- 	usChart.width(990)
-                    .height(500)
-                    .dimension(states)
-                    .group(stateRaisedSum)                
-                    .colors(d3.scale.quantize().range(
-                        ["#E2F2FF", "#C4E4FF", "#9ED2FF", "#81C5FF", "#6BBAFF", "#51AEFF", "#36A2FF", "#1E96FF", "#0089FF", "#0061B5"]))
-                    .colorDomain([0, 200])
-                    .colorCalculator(function (d) { return d ? usChart.colors()(d) : '#ccc'; })	
-                    .overlayGeoJson(statesJson.features, "state", function (d) {
-                        return d.properties.name;
-                    });
-
-
-    usChart.render();
-
-    // var labelG = d3.select("svg")
-    //             .append("svg:g") 
-    //             .attr("id", "labelG") 
-    //             .attr("class", "Title");
-        
-    // // var project = d3.geo.albersUsa(); 
-        
-    //    labelG.selectAll("text") 
-    //        .data(labels.features) 
-    //        .enter().append("svg:text") 
-    //        .text(function(d){return d.properties.name;}) 
-    //        .attr("x", function(d){return project(d.geometry.coordinates)[0];}) 
-    //        .attr("y", function(d){return project(d.geometry.coordinates)[1];}) 
-    //        .attr("dx", "-1em"); 
-
+    // genderChart.render();
+       
+    
     raceChart
     .width(400)
     .height(480)
@@ -206,7 +215,10 @@ d3.csv('racegender.csv', function (data) {
     .legend(dc.legend()) 
     .ordinalColors(['#bf5b17','#f0027f','#7fc97f','#beaed4','#ffff99','#386cb0','#fdc086']);
          
-    raceChart.render();
+    // raceChart.render();
+
+    dc.renderAll();
+    dc.redrawAll();
 
 
 });
