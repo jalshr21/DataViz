@@ -3,8 +3,9 @@ var usChart = dc.geoChoroplethChart("#us-chart");
 var genderChart = dc.barChart('#gender-chart');
 var raceChart = dc.pieChart('#race-chart');
 // var subjectChart = dc.barChart('#subject-chart');
+var schoolCount = dc.dataCount("#mystats");
+var schoolTable = dc.dataTable('#mytable');
 // var schoolTable = dc.dataTable('.dc-data-table');
-
 
 var statesJson = {"type":"FeatureCollection","features":[
 {"type":"Feature","id":"01","properties":{"name":"AL"},"geometry":{"type":"Polygon","coordinates":[[[-87.359296,35.00118],[-85.606675,34.984749],[-85.431413,34.124869],[-85.184951,32.859696],[-85.069935,32.580372],[-84.960397,32.421541],[-85.004212,32.322956],[-84.889196,32.262709],[-85.058981,32.13674],[-85.053504,32.01077],[-85.141136,31.840985],[-85.042551,31.539753],[-85.113751,31.27686],[-85.004212,31.003013],[-85.497137,30.997536],[-87.600282,30.997536],[-87.633143,30.86609],[-87.408589,30.674397],[-87.446927,30.510088],[-87.37025,30.427934],[-87.518128,30.280057],[-87.655051,30.247195],[-87.90699,30.411504],[-87.934375,30.657966],[-88.011052,30.685351],[-88.10416,30.499135],[-88.137022,30.318396],[-88.394438,30.367688],[-88.471115,31.895754],[-88.241084,33.796253],[-88.098683,34.891641],[-88.202745,34.995703],[-87.359296,35.00118]]]}},
@@ -117,41 +118,40 @@ var labels = {"type":"FeatureCollection","features":[
 
 
 
-d3.csv('all_states_racegender.csv', function (data) {
-	var ndx = crossfilter(data);
-    var all = ndx.groupAll();
+d3.csv('priority.csv', function (data) {
+	var sdata = crossfilter(data);
+    var all = sdata.groupAll();
  
-	var states = ndx.dimension(function (d) {
+	var states = sdata.dimension(function (d) {
             return d["LEA_STATE"];
         });
+	var schoolname = sdata.dimension(function (d){
+		return d["SCH_NAME"];
+	})
 	var stateRaisedSum = states.group().reduceSum(function (d) {
             return d["TOT_ENR"];
         });
 
-    var raceDimension = ndx.dimension(function(d){
+    var raceDimension = sdata.dimension(function(d){
     	return d.Race;
     });
 	var raceGroup = raceDimension.group().reduceSum(function(d) {
   		return d.Value/2;
 	});
 
-	// var diffDimension = ndx.dimension(function(d){
- //        return Math.abs(d.TOT_ENR_M - d.TOT_ENR_F);
- //    });
-
-	// var diffGroup = diffDimension.group().reduceCount();
-
-	var genderDimension = ndx.dimension(function(d){
+	var genderDimension = sdata.dimension(function(d){
     	return d.Gender;
     });
 
-	// var genderGroup = genderDimension.group().reduceCount();
 
 	var genderGroup = genderDimension.group().reduceSum(function(d) {
   		return Math.round(d.GenderValue/7);
 	});
 
-	
+	// var schoolGroup = schoolname.groupAll();
+
+
+
  	usChart.width(990)
            .height(500)
            .dimension(states)
@@ -224,7 +224,7 @@ d3.csv('all_states_racegender.csv', function (data) {
     	// 	genderChart.selectAll('.bar:nth-child(2)').style('fill',color2);
     	// });
 
-    // genderChart.render();
+    genderChart.render();
 
 
     raceChart
@@ -237,11 +237,86 @@ d3.csv('all_states_racegender.csv', function (data) {
     .legend(dc.legend()) 
     .ordinalColors(['#bf5b17','#f0027f','#7fc97f','#beaed4','#ffff99','#386cb0','#fdc086']);
          
-    // raceChart.render();
+    raceChart.render();
 
-    dc.renderAll();
-    dc.redrawAll();
+    // schoolTable /* dc.dataTable('.dc-data-table', 'chartGroup') */
+    //     .dimension(schoolname)
+    //     .size(10)
+    //     .columns([
+    //     	'SCH_NAME',
+    //     'SCHOOL_SCORE',
+    //     'LEA_STATE'
+    //     	 ])
+    //     .sortBy(function (d) {
+    //         return d.LEA_STATE;
+    //     })
+    //     .order(d3.ascending);
 
+    // schoolTable.render();    
 
+    // schoolTable
+    // .width(350)
+    // .height(500)
+    // .dimension(schoolname)
+    // .group(function (d) {
+    //         return d.SCHOOL_SCORE;
+    //     })
+    // .size(10)
+    // .columns([
+    //     // Use the `d.date` field; capitalized automatically
+    //     'SCH_NAME',
+    //     // Use `d.open`, `d.close`
+    //     'SCHOOL_SCORE',
+    //     'LEA_STATE',
+    // ])
+    // .on('renderlet', function (table) {
+    //         table.selectAll('.dc-table-group').classed('info', true);
+    //     });
+
+    //working one
+    // schoolTable
+    // .width(768)
+    // .height(480)
+    // .dimension(schoolname)
+    // // .group(function (d) {
+    // //         return [d.SCH_NAME, d.SCHOOL_SCORE ,d.LEA_STATE];
+    // //     })
+    // .group(function(d){
+    // 	return d.SCH_NAME;
+    // })
+    // .size(Infinity)
+    // .columns([function (d) { return d.SCH_NAME },
+    //           function (d) { return d.SCHOOL_SCORE },
+    //           function (d) { return d.LEA_STATE }])
+    // .sortBy(function (d) { return d.SCH_NAME })
+    // .order(d3.ascending)
+    
+    // schoolTable.render();
+
+    // 	function(d){return d.SCHOOL_SCORE}])
+    // .sortBy(function(d) {return d.SCHOOL_SCORE})
+    // .order(d3.descending);
+
+    // dc.renderAll();
+    // dc.redrawAll();
+
+    schoolCount
+	   .dimension(sdata)
+	   .group(sdata.groupAll());
+
+	schoolTable
+	.dimension(schoolname)
+	   .group(function (data) {
+	      return [data.PRIORITY, data.SCHOOL_SCORE];
+	   })
+	   .size(Infinity)
+	   .columns(['SCH_NAME', 'SCHOOL_SCORE','LEA_STATE'])
+	   .sortBy(function (d) {
+	      return [d.PRIORITY, d.SCHOOL_SCORE];
+	   })
+	   .order(d3.descending);
+
+	schoolCount.render();
+	schoolTable.render();
 });
 
