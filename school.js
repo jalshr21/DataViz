@@ -127,12 +127,36 @@ d3.csv('priority.csv', function (data) {
 	var schoolname = sdata.dimension(function (d){
 		return d["SCH_NAME"];
 	})
+
 	var stateRaisedSum = states.group().reduceSum(function (d) {
-            return d["TOT_ENR"];
+            return d["SCHOOL_SCORE"];
         });
 
+
+	// var stateRaisedSum = states.group().reduceSum(function (d) {
+ //            return d["SCH_NAME"];
+ //        });
+
+	// var noschools = schoolname.group().reduceCount();
+
     var raceDimension = sdata.dimension(function(d){
-    	return d.Race;
+    	if (d.Race == 'SCH_ENR_AS') {
+            return 'AS';
+        } else if (d.Race == 'SCH_ENR_BL') {
+            return 'BL';
+        } else if (d.Race == 'SCH_ENR_HP') {
+            return 'HP';
+        }else if (d.Race == 'SCH_ENR_TR') {
+            return 'TR';
+        }else if (d.Race == 'SCH_ENR_HI') {
+            return 'HI';
+        }
+        else if (d.Race == 'SCH_ENR_WH') {
+            return 'WH';
+        }
+        else {
+            return 'AM';
+        }
     });
 	var raceGroup = raceDimension.group().reduceSum(function(d) {
   		return d.Value/2;
@@ -166,8 +190,8 @@ d3.csv('priority.csv', function (data) {
            .dimension(states)
            .group(stateRaisedSum)                
            .colors(d3.scale.quantize().range(
-           ["#E2F2FF", "#C4E4FF", "#9ED2FF", "#81C5FF", "#6BBAFF", "#51AEFF", "#36A2FF", "#1E96FF", "#0089FF", "#0061B5"]))
-           .colorDomain([1000, 400000])
+           	['#fee0d2','#fcbba1', '#fc9272', '#fb6a4a','#ef3b2c','#cb181d','#a50f15','#67000d']))
+           .colorDomain([0, 3500])
            .overlayGeoJson(statesJson.features, "state", function (d) {
            return d.properties.name;
            });
@@ -211,7 +235,9 @@ d3.csv('priority.csv', function (data) {
     .innerRadius(50)
     .dimension(raceDimension)
     .group(raceGroup)
-    .legend(dc.legend()) 
+    // .legend(dc.legend())
+    .legend(dc.legend().horizontal(true).itemWidth(38).itemHeight(17))
+    // .legend(dc.legend().x(260).y(10))
     .ordinalColors(['#bf5b17','#f0027f','#7fc97f','#beaed4','#ffff99','#386cb0','#fdc086']);
          
     raceChart.render();
