@@ -1,11 +1,10 @@
 var usChart = dc.geoChoroplethChart("#us-chart");		
-// var genderChart = dc.pieChart('#gender-chart');
 var genderChart = dc.barChart('#gender-chart');
 var raceChart = dc.pieChart('#race-chart');
-// var subjectChart = dc.barChart('#subject-chart');
 var schoolCount = dc.dataCount("#mystats");
 var schoolTable = dc.dataTable('#mytable');
-// var schoolTable = dc.dataTable('.dc-data-table');
+var arrestChart = dc.barChart("#arrest-chart");
+var suspensionChart = dc.barChart("#suspension-chart");
 
 var statesJson = {"type":"FeatureCollection","features":[
 {"type":"Feature","id":"01","properties":{"name":"AL"},"geometry":{"type":"Polygon","coordinates":[[[-87.359296,35.00118],[-85.606675,34.984749],[-85.431413,34.124869],[-85.184951,32.859696],[-85.069935,32.580372],[-84.960397,32.421541],[-85.004212,32.322956],[-84.889196,32.262709],[-85.058981,32.13674],[-85.053504,32.01077],[-85.141136,31.840985],[-85.042551,31.539753],[-85.113751,31.27686],[-85.004212,31.003013],[-85.497137,30.997536],[-87.600282,30.997536],[-87.633143,30.86609],[-87.408589,30.674397],[-87.446927,30.510088],[-87.37025,30.427934],[-87.518128,30.280057],[-87.655051,30.247195],[-87.90699,30.411504],[-87.934375,30.657966],[-88.011052,30.685351],[-88.10416,30.499135],[-88.137022,30.318396],[-88.394438,30.367688],[-88.471115,31.895754],[-88.241084,33.796253],[-88.098683,34.891641],[-88.202745,34.995703],[-87.359296,35.00118]]]}},
@@ -148,9 +147,19 @@ d3.csv('priority.csv', function (data) {
   		return Math.round(d.GenderValue/7);
 	});
 
-	// var schoolGroup = schoolname.groupAll();
+	//Offenses dimensions and groups
+	var schoolDim = sdata.dimension(function (d) { return d.LEA_STATE; });
+	var bogus_dim = {};
+	var able_male_arr = schoolDim.group().reduceSum(function (d) { return d.TOT_DISCWODIS_ARR_M; });
+	var able_female_arr = schoolDim.group().reduceSum(function (d) { return d.TOT_DISCWODIS_ARR_F; });
+	var disable_male_arr = schoolDim.group().reduceSum(function (d) { return d.TOT_DISCWDIS_ARR_IDEA_M; });
+	var disable_female_arr = schoolDim.group().reduceSum(function (d) { return d.TOT_DISCWDIS_ARR_IDEA_F; });
 
 
+	var able_male_suspension = schoolDim.group().reduceSum(function (d) { return d.TOT_DISCWODIS_ISS_M; });
+	var able_female_suspension = schoolDim.group().reduceSum(function (d) { return d.TOT_DISCWODIS_ISS_F; });
+	var disable_male_suspension = schoolDim.group().reduceSum(function (d) { return d.TOT_DISCWDIS_ISS_IDEA_M; });
+	var disable_female_suspension = schoolDim.group().reduceSum(function (d) { return d.TOT_DISCWDIS_ISS_IDEA_F; });
 
  	usChart.width(990)
            .height(500)
@@ -181,31 +190,6 @@ d3.csv('priority.csv', function (data) {
 
     usChart.render();  
 
-    // pie chart for gender -- 
-    // genderChart
-    // .width(400)
-    // .height(480)
-    // .slicesCap(3)
-    // .innerRadius(50)
-    // .dimension(genderDimension)
-    // .group(genderGroup)
-    // .legend(dc.legend()) 
-    // .ordinalColors(['#7fc97f','#beaed4']);
-    
-    // genderChart.render();
-       
-    // genderchart for difference in male and female - 
-    // genderChart
-    // .width(400)
-    // .height(480)
-    // .x(d3.scale.linear().domain([0, 100]))
-    // .yAxisLabel("Male vs. Female")
-    // .brushOn(false)
-    // .dimension(diffDimension)
-    // .group(diffGroup);
-    
-    // genderChart.render();
-
     genderChart 
         .width(320)
         .height(380)
@@ -216,13 +200,6 @@ d3.csv('priority.csv', function (data) {
         .xUnits(dc.units.ordinal)
     	.elasticY(true)
     	.xAxis().tickFormat();
-    	// .on('renderlet', function(genderChart)
-    	// {
-    	// 	var color1 = '#7fc97f';
-    	// 	var color2 = '#beaed4';
-    	// 	genderChart.selectAll('.bar:nth-child(1)').style('fill',color1);
-    	// 	genderChart.selectAll('.bar:nth-child(2)').style('fill',color2);
-    	// });
 
     genderChart.render();
 
@@ -239,66 +216,39 @@ d3.csv('priority.csv', function (data) {
          
     raceChart.render();
 
-    // schoolTable /* dc.dataTable('.dc-data-table', 'chartGroup') */
-    //     .dimension(schoolname)
-    //     .size(10)
-    //     .columns([
-    //     	'SCH_NAME',
-    //     'SCHOOL_SCORE',
-    //     'LEA_STATE'
-    //     	 ])
-    //     .sortBy(function (d) {
-    //         return d.LEA_STATE;
-    //     })
-    //     .order(d3.ascending);
+    arrestChart
+    .dimension(schoolDim)
+    // .width(1500)
+    .width(990)
+    .group(able_male_arr, 'Able Males')
+    .x(d3.scale.ordinal())
+    .xUnits(dc.units.ordinal)
+    .stack(able_female_arr, 'Able Female')
+    .stack(disable_male_arr, 'Disabled Male')
+    .stack(disable_female_arr, 'Disabled Female')
+    .elasticY(true)
+    .legend(dc.legend().x(400).y(5).itemHeight(15))
+    .margins({top: 10, right: 50, bottom: 30, left: 40})
 
-    // schoolTable.render();    
+    arrestChart.render();
 
-    // schoolTable
-    // .width(350)
-    // .height(500)
-    // .dimension(schoolname)
-    // .group(function (d) {
-    //         return d.SCHOOL_SCORE;
-    //     })
-    // .size(10)
-    // .columns([
-    //     // Use the `d.date` field; capitalized automatically
-    //     'SCH_NAME',
-    //     // Use `d.open`, `d.close`
-    //     'SCHOOL_SCORE',
-    //     'LEA_STATE',
-    // ])
-    // .on('renderlet', function (table) {
-    //         table.selectAll('.dc-table-group').classed('info', true);
-    //     });
+	suspensionChart
+    .dimension(schoolDim)
+    // .width(1500)
+    // .height(200)
+    .width(990)
+    // .height(300)
+    .group(able_male_suspension, 'Able Males')
+    .x(d3.scale.ordinal())
+    .xUnits(dc.units.ordinal)
+    .stack(able_female_suspension, 'Able Female')
+    .stack(disable_male_suspension, 'Disabled Male')
+    .stack(disable_male_suspension, 'Disabled Female')
+    .elasticY(true)
+    .legend(dc.legend().x(400).y(5).itemHeight(15))
+    .margins({top: 10, right: 50, bottom: 30, left: 40})
 
-    //working one
-    // schoolTable
-    // .width(768)
-    // .height(480)
-    // .dimension(schoolname)
-    // // .group(function (d) {
-    // //         return [d.SCH_NAME, d.SCHOOL_SCORE ,d.LEA_STATE];
-    // //     })
-    // .group(function(d){
-    // 	return d.SCH_NAME;
-    // })
-    // .size(Infinity)
-    // .columns([function (d) { return d.SCH_NAME },
-    //           function (d) { return d.SCHOOL_SCORE },
-    //           function (d) { return d.LEA_STATE }])
-    // .sortBy(function (d) { return d.SCH_NAME })
-    // .order(d3.ascending)
-    
-    // schoolTable.render();
-
-    // 	function(d){return d.SCHOOL_SCORE}])
-    // .sortBy(function(d) {return d.SCHOOL_SCORE})
-    // .order(d3.descending);
-
-    // dc.renderAll();
-    // dc.redrawAll();
+    suspensionChart.render();
 
     schoolCount
 	   .dimension(sdata)
@@ -307,12 +257,12 @@ d3.csv('priority.csv', function (data) {
 	schoolTable
 	.dimension(schoolname)
 	   .group(function (data) {
-	      return [data.PRIORITY, data.SCHOOL_SCORE];
+	      return [data.PRIORITY, data["SCHOOL_SCORE"]];
 	   })
 	   .size(Infinity)
-	   .columns(['SCH_NAME', 'SCHOOL_SCORE','LEA_STATE'])
+	   .columns(['SCH_NAME', 'LEA_STATE', 'GENDER_SCORE', 'RACE_SCORE', 'COURSES_SCORE', 'OFFENSES_SCORE'])
 	   .sortBy(function (d) {
-	      return [d.PRIORITY, d.SCHOOL_SCORE];
+	      return [d.PRIORITY, d["SCHOOL_SCORE"]];
 	   })
 	   .order(d3.descending);
 
