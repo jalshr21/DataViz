@@ -223,6 +223,9 @@ d3.csv('priority.csv', function (data) {
         .group(genderGroup)
         .xUnits(dc.units.ordinal)
     	.elasticY(true)
+    	// .centerBar(true)
+    	// .colorDomain([0,40000])
+    	// .ordinalColors(['#bf5b17','#f0027f','#7fc97f','#beaed4','#ffff99','#386cb0','#fdc086'])
     	.xAxis().tickFormat();
 
     genderChart.render();
