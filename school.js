@@ -116,9 +116,9 @@ var labels = {"type":"FeatureCollection","features":[
         ]}; 
 
 
-
+var sdata;
 d3.csv('priority.csv', function (data) {
-	var sdata = crossfilter(data);
+	sdata = crossfilter(data);
     var all = sdata.groupAll();
  
 	var states = sdata.dimension(function (d) {
@@ -201,10 +201,19 @@ d3.csv('priority.csv', function (data) {
            .colorDomain([1000, 1400])
            .overlayGeoJson(statesJson.features, "state", function (d) {
            return d.properties.name;
+           })
+           .projection(d3.geo.albersUsa())
+           .valueAccessor(function(kv) {
+                    console.log(kv);
+                    return kv.value;
+                })
+           .title(function (d) {
+              return "State: " + d.key + "\nTotal Score: " + d.value;
            });
 
     var labelG = d3.select("svg")
                 .append("svg:g") 
+                // .call(legend)
                 .attr("id", "labelG") 
                 .attr("class", "Title");
         
@@ -217,7 +226,37 @@ d3.csv('priority.csv', function (data) {
            .attr("x", function(d){return project(d.geometry.coordinates)[0];}) 
            .attr("y", function(d){return project(d.geometry.coordinates)[1];}) 
            .attr("dx", "-1em"); 
+    /*
+    color = d3.scale.quantize().range(['#fee0d2','#fcbba1', '#fc9272', '#fb6a4a','#ef3b2c','#cb181d','#a50f15','#67000d']);
+    legend = g => {
+    const x = d3.scale.linear()
+      .domain(d3.extent(color.domain()))
+      .rangeRound([0, 260]);
+    g.selectAll("rect")
+    .data(color.range().map(d => color.invertExtent(d)))
+    .join("rect")
+      .attr("height", 8)
+      .attr("x", d => x(d[0]))
+      .attr("width", d => x(d[1]) - x(d[0]))
+      .attr("fill", d => color(d[0]));
 
+  	g.append("text")
+      .attr("x", x.range()[0])
+      .attr("y", -6)
+      .attr("fill", "currentColor")
+      .attr("text-anchor", "start")
+      .attr("font-weight", "bold")
+      .text(data.title);
+
+ 	g.call(d3.axisBottom(x)
+      .tickSize(13)
+      .tickFormat(d => d)
+      .tickValues(color.range().slice(1).map(d => color.invertExtent(d)[0])))
+    .select(".domain")
+      .remove();
+	}
+    */
+    
 
     usChart.render();  
 
@@ -301,57 +340,50 @@ d3.csv('priority.csv', function (data) {
 	      return [d.PRIORITY, d["SCHOOL_SCORE"]];
 	   })
 	   .order(d3.descending)
-	   // .on('preRender', display);
-	   // .on('preRender', update_offset)
-    //    .on('preRedraw', update_offset)
-    //    .on('pretransition', display);
+	   .on('preRender', display)
+	   .on('preRender', update_offset)
+       .on('preRedraw', update_offset)
+       .on('pretransition', display);
 
 	schoolCount.render();
 	schoolTable.render();
-
-	// function display()
-	// {
-	// 	var filteredrecs = sdata.groupAll().value();
-		
-	// }
-	// // use odd page size to show the effect better
-	//   var ofs = 0, pag = 17;
-	//   function update_offset() {
-	//       var totFilteredRecs = sdata.groupAll().value();
-	//       var end = ofs + pag > totFilteredRecs ? totFilteredRecs : ofs + pag;
-	//       ofs = ofs >= totFilteredRecs ? Math.floor((totFilteredRecs - 1) / pag) * pag : ofs;
-	//       ofs = ofs < 0 ? 0 : ofs;
-	//       schoolTable.beginSlice(ofs);
-	//       schoolTable.endSlice(ofs+pag);
-	//   }
-	//   function display() {
-	//       var totFilteredRecs = sdata.groupAll().value();
-	//       var end = ofs + pag > totFilteredRecs ? totFilteredRecs : ofs + pag;
-	//       d3.select('#begin')
-	//           .text(end === 0? ofs : ofs + 1);
-	//       d3.select('#end')
-	//           .text(end);
-	//       d3.select('#last')
-	//           .attr('disabled', ofs-pag<0 ? 'true' : null);
-	//       d3.select('#next')
-	//           .attr('disabled', ofs+pag>=totFilteredRecs ? 'true' : null);
-	//       d3.select('#size').text(totFilteredRecs);
-	//       if(totFilteredRecs != sdata.size()){
-	//         d3.select('#totalsize').text("(filtered Total: " + sdata.size() + " )");
-	//       }else{
-	//         d3.select('#totalsize').text('');
-	//       }
-	//   }
-	//   function next() {
-	//       ofs += pag;
-	//       update_offset();
-	//       schoolTable.redraw();
-	//   }
-	//   function last() {
-	//       ofs -= pag;
-	//       update_offset();
-	//       schoolTable.redraw();
-	//   }
-	  	
 });
 
+// use odd page size to show the effect better
+  var ofs = 0, pag = 5;
+  function update_offset() {
+      var totFilteredRecs = sdata.groupAll().value();
+      var end = ofs + pag > totFilteredRecs ? totFilteredRecs : ofs + pag;
+      ofs = ofs >= totFilteredRecs ? Math.floor((totFilteredRecs - 1) / pag) * pag : ofs;
+      ofs = ofs < 0 ? 0 : ofs;
+      schoolTable.beginSlice(ofs);
+      schoolTable.endSlice(ofs+pag);
+  }
+  function display() {
+      var totFilteredRecs = sdata.groupAll().value();
+      var end = ofs + pag > totFilteredRecs ? totFilteredRecs : ofs + pag;
+      d3.select('#begin')
+          .text(end === 0? ofs : ofs + 1);
+      d3.select('#end')
+          .text(end);
+      d3.select('#last')
+          .attr('disabled', ofs-pag<0 ? 'true' : null);
+      d3.select('#next')
+          .attr('disabled', ofs+pag>=totFilteredRecs ? 'true' : null);
+      d3.select('#size').text(totFilteredRecs);
+      if(totFilteredRecs != sdata.size()){
+        d3.select('#totalsize').text("(filtered Total: " + sdata.size() + " )");
+      }else{
+        d3.select('#totalsize').text('');
+      }
+  }
+  function next() {
+      ofs += pag;
+      update_offset();
+      schoolTable.redraw();
+  }
+  function last() {
+      ofs -= pag;
+      update_offset();
+      schoolTable.redraw();
+  }
