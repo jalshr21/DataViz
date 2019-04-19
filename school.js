@@ -171,6 +171,13 @@ d3.csv('priority.csv', function (data) {
   		return Math.round(d.GenderValue/7);
 	});
 
+	var priority = sdata.dimension(function (d){
+		return d.PRIORITY;
+	});
+	priority.top(Infinity).filter(function (d){
+		return d.PRIORITY==9;
+	})
+
 	//Offenses dimensions and groups
 	var schoolDim = sdata.dimension(function (d) { return d.LEA_STATE; });
 	var bogus_dim = {};
@@ -191,7 +198,7 @@ d3.csv('priority.csv', function (data) {
            .group(stateRaisedSum)                
            .colors(d3.scale.quantize().range(
            	['#fee0d2','#fcbba1', '#fc9272', '#fb6a4a','#ef3b2c','#cb181d','#a50f15','#67000d']))
-           .colorDomain([0, 3500])
+           .colorDomain([1000, 1400])
            .overlayGeoJson(statesJson.features, "state", function (d) {
            return d.properties.name;
            });
@@ -293,9 +300,58 @@ d3.csv('priority.csv', function (data) {
 	   .sortBy(function (d) {
 	      return [d.PRIORITY, d["SCHOOL_SCORE"]];
 	   })
-	   .order(d3.descending);
+	   .order(d3.descending)
+	   // .on('preRender', display);
+	   // .on('preRender', update_offset)
+    //    .on('preRedraw', update_offset)
+    //    .on('pretransition', display);
 
 	schoolCount.render();
 	schoolTable.render();
+
+	// function display()
+	// {
+	// 	var filteredrecs = sdata.groupAll().value();
+		
+	// }
+	// // use odd page size to show the effect better
+	//   var ofs = 0, pag = 17;
+	//   function update_offset() {
+	//       var totFilteredRecs = sdata.groupAll().value();
+	//       var end = ofs + pag > totFilteredRecs ? totFilteredRecs : ofs + pag;
+	//       ofs = ofs >= totFilteredRecs ? Math.floor((totFilteredRecs - 1) / pag) * pag : ofs;
+	//       ofs = ofs < 0 ? 0 : ofs;
+	//       schoolTable.beginSlice(ofs);
+	//       schoolTable.endSlice(ofs+pag);
+	//   }
+	//   function display() {
+	//       var totFilteredRecs = sdata.groupAll().value();
+	//       var end = ofs + pag > totFilteredRecs ? totFilteredRecs : ofs + pag;
+	//       d3.select('#begin')
+	//           .text(end === 0? ofs : ofs + 1);
+	//       d3.select('#end')
+	//           .text(end);
+	//       d3.select('#last')
+	//           .attr('disabled', ofs-pag<0 ? 'true' : null);
+	//       d3.select('#next')
+	//           .attr('disabled', ofs+pag>=totFilteredRecs ? 'true' : null);
+	//       d3.select('#size').text(totFilteredRecs);
+	//       if(totFilteredRecs != sdata.size()){
+	//         d3.select('#totalsize').text("(filtered Total: " + sdata.size() + " )");
+	//       }else{
+	//         d3.select('#totalsize').text('');
+	//       }
+	//   }
+	//   function next() {
+	//       ofs += pag;
+	//       update_offset();
+	//       schoolTable.redraw();
+	//   }
+	//   function last() {
+	//       ofs -= pag;
+	//       update_offset();
+	//       schoolTable.redraw();
+	//   }
+	  	
 });
 
