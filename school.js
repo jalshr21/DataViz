@@ -431,6 +431,19 @@ d3.csv('priority.csv', function (data) {
       update_offset();
       schoolTable.redraw();
   }
+function racegFunction() 
+  {
+  var x = document.getElementById("racegender");
+  if (x.style.display === "none") {
+    x.style.display = "block";
+  } else {
+    x.style.display = "none";
+  }
+  var elem = document.getElementById("racegButton");
+    if (elem.value=="Show Diversity") elem.value = "Hide Diversity";
+    else elem.value = "Show Diversity";
+	}
+
   function raceFunction() 
   {
   var x = document.getElementById("race-chart");
@@ -500,7 +513,7 @@ function harassmentFunction()
     x.style.display = "none";
   }
   var elem = document.getElementById("harassmentButton");
-    if (elem.value=="Show Harassment & Bullying'") elem.value = "Hide Harassment & Bullying";
-    else elem.value = "Show Harassment & Bullying'";
+    if (elem.value=="Show Harassment & Bullying") elem.value = "Hide Harassment & Bullying";
+    else elem.value = "Show Harassment & Bullying";
 	}
 

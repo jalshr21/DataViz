@@ -36,7 +36,7 @@
   font-family:Arial;
   font-size:15px;
   font-weight:bold;
-  padding:6px 24px;
+  padding:6px 10px;
   text-decoration:none;
   text-shadow:0px 1px 0px #ffffff;
 }
@@ -62,13 +62,10 @@
 </script>
 	<div class="container">
 
-<h1 style="text-align:center;">USA Schools 2015-2016</h1>
-<br>
-<br>
-
+<h2 style="text-align:center;">USA Schools 2015-2016</h2>
 <div class="row">
 	<div id="us-chart">
-        <h3><strong>Score Distribution by States (Saturation: School Score)</strong></h3>
+        <h4><strong>Score Distribution by States (Saturation: School Score)</strong></h4>
         <p>The map displays the average score for the schools in each state. Click on a state to see schools in that state. Scores range from 1 to 5, with 5 being the best.</p>
         <a class="reset" href="javascript:usChart.filterAll();dc.redrawAll();" style="display: none;">reset</a>
         <!-- <span class="reset" style="display: none;"> | Current filter: <span class="filter"></span></span> -->
@@ -76,11 +73,12 @@
         <div class="clearfix"></div>
     </div>
 </div>
-<br>
-<h3>Measuring race and gender diversity</h3>
+<h4>Measuring race and gender diversity
+<input class ='myButton' type='button' id="racegButton" value='Hide Diversity'onclick="racegFunction()"></input></h4>
+<div id = "racegender">
 <p>The following section contains information regarding the race and gender diversity in the schools. Click on the button to hide/show the visualization.</p>
 <p><strong>*Note - AM - Native American, AS - Asian, BL - Black, HI - Hispanic, HP - Pacific Islander, TR - Two or more Races, WH - White.</strong></p>  
-<div class="row">
+<!-- <div class="row">
   <div class = "span2">
   </div>
   <div class="span5">
@@ -90,7 +88,7 @@
   <input class ='myButton' type='button' id="genderButton" value='Hide Gender Diversity'onclick="genderFunction()"></input>
 </div>
 </div>
-<br>
+<br> -->
 <div class="row">
   <div class = "span2">
   </div>
@@ -107,15 +105,16 @@
     </div>
 </div>  
 </div>
-<br>
-<h3>Measuring Offenses</h3>
-<p>Please click on the buttons to show the visualizations for arrests, suspensions, harrassment and expulsions for each state</p>
-<div class="row">
+</div>
+<h4>Measuring Offenses
+<!-- <p>Please click on the buttons to show the visualizations for arrests, suspensions, harrassment and expulsions for each state</p> -->
+<!-- <div class="row"> -->
   <input class ='myButton' type='button' id="arrestButton" value='Show Arrests'onclick="arrestFunction()"></input>
   <input class ='myButton' type='button' id="suspensionButton" value='Show Suspensions'onclick="suspensionFunction()"></input>
   <input class ='myButton' type='button' id="expulsionButton" value='Show Expulsions'onclick="expulsionFunction()"></input>
   <input class ='myButton' type='button' id="harassmentButton" value='Show Harassment & Bullying'onclick="harassmentFunction()"></input>
-</div>
+<!-- </div> -->
+</h4>
 <div class="row">
     <div id="arrest-chart" style="display: none">
         <strong>Arrests</strong>
@@ -148,32 +147,32 @@
 </div>
 
 <br>
-<h3>Top Schools</h3>
+<h4>Top Schools</h4>
 <p>This table contains the score for each school based on the previously seen aspects. Score of 5 being the best.</p>
  <div class="row">
 <div>
-     <div style = "width: 600px;">
+     <!-- <div style = "width: 600px;">
         <div id = "mystats" class="dc-data-count dc-chart" style = "float: right">
            <span class = "filter-count"></span> selected out of <span
            class = "total-count"></span> | <a href = "javascript:dc.filterAll();
            dc.renderAll();">Reset All</a>
         </div>
-     </div>
+     </div> -->
 
-<div style = "clear: both; padding-top: 20px;">
+<!-- <div style = "clear: both; padding-top: 10px;">
             <div>
                <div id = "line"></div>
             </div>
-         </div>
-    <div id="paging">
-        Showing <span id="begin"></span>-<span id="end"></span> of <span id="size"></span> <span id="totalsize"></span>
-        <input id="last" class="btn" type="Button" value="Last" onclick="javascript:last()"/>
-        <input id="next" class="btn" type="button" value="Next" onclick="javascript:next()"/>
-      </div>
+         </div> -->
          <div style = "clear: both">
             <div id = "mytable"   class="table table-hover dc-data-table dc-chart table-striped">
             </div>
          </div>
+         <div id="paging">
+        Showing <span id="begin"></span>-<span id="end"></span> of <span id="size"></span> <span id="totalsize"></span>
+        <input id="last" class="btn" type="Button" value="Last" onclick="javascript:last()"/>
+        <input id="next" class="btn" type="button" value="Next" onclick="javascript:next()"/>
+      </div>
       </div>
 </div>
 
