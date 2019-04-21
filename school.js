@@ -129,15 +129,8 @@ d3.csv('priority.csv', function (data) {
 	})
 
 	var stateRaisedSum = states.group().reduceSum(function (d) {
-            return d["SCHOOL_SCORE"];
+            return d["SCHOOL_SCORE"]/(25*14); 
         });
-
-
-	// var stateRaisedSum = states.group().reduceSum(function (d) {
- //            return d["SCH_NAME"];
- //        });
-
-	// var noschools = schoolname.group().reduceCount();
 
     var raceDimension = sdata.dimension(function(d){
     	if (d.Race == 'SCH_ENR_AS') {
@@ -192,13 +185,15 @@ d3.csv('priority.csv', function (data) {
 	var disable_male_suspension = schoolDim.group().reduceSum(function (d) { return d.TOT_DISCWDIS_ISS_IDEA_M; });
 	var disable_female_suspension = schoolDim.group().reduceSum(function (d) { return d.TOT_DISCWDIS_ISS_IDEA_F; });
 
- 	usChart.width(990)
+ 	usChart.width(1000)
            .height(500)
            .dimension(states)
            .group(stateRaisedSum)                
            .colors(d3.scale.quantize().range(
-           	['#fee0d2','#fcbba1', '#fc9272', '#fb6a4a','#ef3b2c','#cb181d','#a50f15','#67000d']))
-           .colorDomain([1000, 1400])
+           	// ['#fee0d2','#fcbba1', '#fc9272', '#fb6a4a','#ef3b2c','#cb181d','#a50f15','#67000d']))
+           	['#fee0d2', '#fb6a4a','#ef3b2c','#a50f15','#67000d']))
+           .colorDomain([2.8, 4.15])
+           .colorCalculator(function (d) { return d ? usChart.colors()(d) : '#ccc'; })
            .overlayGeoJson(statesJson.features, "state", function (d) {
            return d.properties.name;
            })
@@ -208,12 +203,28 @@ d3.csv('priority.csv', function (data) {
                     return kv.value;
                 })
            .title(function (d) {
-              return "State: " + d.key + "\nTotal Score: " + d.value;
+              return "State: " + d.key + "\nAverage Score: " + Math.round(d.value*1000)/1000;
            });
+
+   	usChart.legendables = function () {
+          								var range = usChart.colors().range()
+                          var domain = usChart.colorDomain()
+                          var step = (domain[1] - domain[0]) / range.length
+                          var val = domain[0] 
+			 	                  return range.map(function (d, i) {
+			 	                      var legendable = {name: val + "-" + (val+step), chart: usChart};
+			 	                      legendable.color = usChart.colorCalculator()(val);
+                              val += step
+			 	                      return legendable;
+			 	                  });
+			 	              };  
+              
+             
+
+    usChart.legend(dc.legend().x(900).y(20).itemHeight(20).gap(5))
 
     var labelG = d3.select("svg")
                 .append("svg:g") 
-                // .call(legend)
                 .attr("id", "labelG") 
                 .attr("class", "Title");
         
@@ -226,45 +237,27 @@ d3.csv('priority.csv', function (data) {
            .attr("x", function(d){return project(d.geometry.coordinates)[0];}) 
            .attr("y", function(d){return project(d.geometry.coordinates)[1];}) 
            .attr("dx", "-1em"); 
-    /*
-    color = d3.scale.quantize().range(['#fee0d2','#fcbba1', '#fc9272', '#fb6a4a','#ef3b2c','#cb181d','#a50f15','#67000d']);
-    legend = g => {
-    const x = d3.scale.linear()
-      .domain(d3.extent(color.domain()))
-      .rangeRound([0, 260]);
-    g.selectAll("rect")
-    .data(color.range().map(d => color.invertExtent(d)))
-    .join("rect")
-      .attr("height", 8)
-      .attr("x", d => x(d[0]))
-      .attr("width", d => x(d[1]) - x(d[0]))
-      .attr("fill", d => color(d[0]));
-
-  	g.append("text")
-      .attr("x", x.range()[0])
-      .attr("y", -6)
-      .attr("fill", "currentColor")
-      .attr("text-anchor", "start")
-      .attr("font-weight", "bold")
-      .text(data.title);
-
- 	g.call(d3.axisBottom(x)
-      .tickSize(13)
-      .tickFormat(d => d)
-      .tickValues(color.range().slice(1).map(d => color.invertExtent(d)[0])))
-    .select(".domain")
-      .remove();
-	}
-    */
     
 
     usChart.render();  
+
+    raceChart
+    .width(300)
+    .height(380)
+    .slicesCap(7)
+    .innerRadius(50)
+    .dimension(raceDimension)
+    .group(raceGroup)
+    .legend(dc.legend().horizontal(true).itemWidth(38).itemHeight(17))
+    .ordinalColors(['#bf5b17','#f0027f','#7fc97f','#beaed4','#ffff99','#386cb0','#fdc086']);
+         
+    raceChart.render();
 
     genderChart 
         .width(320)
         .height(380)
         .x(d3.scale.ordinal().domain(genderDimension))
-        .margins({top: 10, right: 50, bottom: 30, left: 40})
+        .margins({top: 10, right: 50, bottom: 30, left: 50})
         .dimension(genderDimension)
         .group(genderGroup)
         .xUnits(dc.units.ordinal)
@@ -276,25 +269,10 @@ d3.csv('priority.csv', function (data) {
 
     genderChart.render();
 
-
-    raceChart
-    .width(300)
-    .height(380)
-    .slicesCap(7)
-    .innerRadius(50)
-    .dimension(raceDimension)
-    .group(raceGroup)
-    // .legend(dc.legend())
-    .legend(dc.legend().horizontal(true).itemWidth(38).itemHeight(17))
-    // .legend(dc.legend().x(260).y(10))
-    .ordinalColors(['#bf5b17','#f0027f','#7fc97f','#beaed4','#ffff99','#386cb0','#fdc086']);
-         
-    raceChart.render();
-
     arrestChart
     .dimension(schoolDim)
     // .width(1500)
-    .width(990)
+    .width(1000)
     .group(able_male_arr, 'Able Males')
     .x(d3.scale.ordinal())
     .xUnits(dc.units.ordinal)
@@ -311,7 +289,7 @@ d3.csv('priority.csv', function (data) {
     .dimension(schoolDim)
     // .width(1500)
     // .height(200)
-    .width(990)
+    .width(1000)
     // .height(300)
     .group(able_male_suspension, 'Able Males')
     .x(d3.scale.ordinal())
@@ -335,7 +313,7 @@ d3.csv('priority.csv', function (data) {
 	      return [data.PRIORITY, data["SCHOOL_SCORE"]];
 	   })
 	   .size(Infinity)
-	   .columns(['SCH_NAME', 'LEA_STATE', 'GENDER_SCORE', 'RACE_SCORE', 'COURSES_SCORE', 'OFFENSES_SCORE'])
+	   .columns(['SCH_NAME', 'LEA_STATE', 'GENDER_SCORE', 'RACE_SCORE', 'COURSES_SCORE', 'OFFENSES_SCORE','SCHOOL_SCORE'])
 	   .sortBy(function (d) {
 	      return [d.PRIORITY, d["SCHOOL_SCORE"]];
 	   })
@@ -387,3 +365,40 @@ d3.csv('priority.csv', function (data) {
       update_offset();
       schoolTable.redraw();
   }
+  function raceFunction() 
+  {
+  var x = document.getElementById("race-chart");
+  if (x.style.display === "none") {
+    x.style.display = "block";
+  } else {
+    x.style.display = "none";
+  }
+	}
+function genderFunction() 
+  {
+  var x = document.getElementById("gender-chart");
+  if (x.style.display === "none") {
+    x.style.display = "block";
+  } else {
+    x.style.display = "none";
+  }
+}
+function arrestFunction() 
+  {
+  var x = document.getElementById("arrest-chart");
+  if (x.style.display === "none") {
+    x.style.display = "block";
+  } else {
+    x.style.display = "none";
+  }
+	}
+function suspensionFunction() 
+  {
+  var x = document.getElementById("suspension-chart");
+  if (x.style.display === "none") {
+    x.style.display = "block";
+  } else {
+    x.style.display = "none";
+  }
+}
+

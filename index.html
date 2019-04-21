@@ -8,9 +8,12 @@
 </head>
 <body>
     <style type="text/css">
-        .table tbody tr.info td {
-    background-color: #d9edf7;
-}
+        .dc-table-head {
+    background-color: rgb(252, 146, 114);
+      }
+      .dc-table-label {
+          visibility: collapse;
+        }
     </style>
 	<script src="uStates.js"></script> <!-- creates uStates. -->
 <script src="http://d3js.org/d3.v3.min.js"></script>
@@ -33,58 +36,52 @@
 </div>
 <br>
 <div class="row">
-	<div class="span6"> 
-    <div id="gender-chart">
-        <strong>Gender Diversity</strong>
-        <a class="reset" href="javascript:genderChart.filterAll();dc.redrawAll();" style="display: none;">reset</a>
-        <div class="clearfix"></div>
-    </div>
+  <div class = "span2">
+  </div>
+  <div class="span5">
+  <button onclick="raceFunction()">Racial Diversity</button>
 </div>
-<div class="span6"> 
+<div class="span5">
+  <button onclick="genderFunction()">Gender Diversity</button>
+</div>
+</div>
+<div class="row">
+  <div class = "span2">
+  </div>
+	<div class="span5"> 
     <div id="race-chart">
         <strong>Racial Diversity</strong>
         <a class="reset" href="javascript:raceChart.filterAll();dc.redrawAll();" style="display: none;">reset</a>
         <div class="clearfix"></div>
     </div>
-  </div>  
+  </div>
+  <div class="span5"> 
+    <div id="gender-chart">
+        <strong>Gender Diversity</strong>
+        <a class="reset" href="javascript:genderChart.filterAll();dc.redrawAll();" style="display: none;">reset</a>
+        <div class="clearfix"></div>
+    </div>
+</div>  
 </div>
 <br>
 <div class="row">
-    <div id="arrest-chart">
+  <button onclick="arrestFunction()">Arrests Data</button>
+  <button onclick="suspensionFunction()">Suspension Data</button>
+</div>
+<div class="row">
+    <div id="arrest-chart" style="display: none">
         <strong>Arrests</strong>
         <a class="reset" href="javascript:arrestChart.filterAll();dc.redrawAll();" style="display: none;">reset</a>
         <div class="clearfix"></div>
     </div>
 </div>
 <div class="row">
-    <div id="suspension-chart">
+    <div id="suspension-chart" style="display: none">
         <strong>Suspensions</strong>
         <a class="reset" href="javascript:suspensionChart.filterAll();dc.redrawAll();" style="display: none;">reset</a>
         <div class="clearfix"></div>
     </div>
 </div>
-
-<!-- <div class='row'>
-    <h4 >Arrests</h4>
-  <div class='chart' id='arrest-chart' style="padding: 150px">
-  </div>
-  <h4>Suspension</h4>
-  <div class='chart' id='suspension-chart' style="padding: 100px">
-  </div>
-   <div class='chart' id='expulsion-chart' style="padding: 100px">
-  </div>
-
-</div>  --> 
-
-<!-- <div id='dc-data-table'> -->
-      <!-- create a custom header -->
-      <!-- <div class='header'> -->
-          <!-- <span>Date</span> -->
-          <!-- <span>Open</span> -->
-          <!-- <span>Close</span> -->
-      <!-- </div> -->
-      <!-- data rows will filled in here -->
-   <!-- </div> -->
 
 <br>
  <div class="row">
