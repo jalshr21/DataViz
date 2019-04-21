@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Data Visualization Project</title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="css/dc.css"/>
+</head>
+<body>
+    <style type="text/css">
+        .dc-table-head {
+    background-color: rgb(252, 146, 114);
+      }
+      .dc-table-label {
+          visibility: collapse;
+        }
+    </style>
+	<script src="uStates.js"></script> <!-- creates uStates. -->
+<script src="http://d3js.org/d3.v3.min.js"></script>
+
+</script>
+	<div class="container">
+
+<h2 style="text-align:center;">USA School Data 2015-16</h2>
+<br>
+<br>
+
+<div class="row">
+	<div id="us-chart">
+        <strong>Score Distribution by States (Saturation: School Score)</strong>
+        <a class="reset" href="javascript:usChart.filterAll();dc.redrawAll();" style="display: none;">reset</a>
+        <!-- <span class="reset" style="display: none;"> | Current filter: <span class="filter"></span></span> -->
+
+        <div class="clearfix"></div>
+    </div>
+</div>
+<br>
+<div class="row">
+  <div class = "span2">
+  </div>
+  <div class="span5">
+  <button onclick="raceFunction()">Racial Diversity</button>
+</div>
+<div class="span5">
+  <button onclick="genderFunction()">Gender Diversity</button>
+</div>
+</div>
+<div class="row">
+  <div class = "span2">
+  </div>
+	<div class="span5"> 
+    <div id="race-chart">
+        <strong>Racial Diversity</strong>
+        <a class="reset" href="javascript:raceChart.filterAll();dc.redrawAll();" style="display: none;">reset</a>
+        <div class="clearfix"></div>
+    </div>
+  </div>
+  <div class="span5"> 
+    <div id="gender-chart">
+        <strong>Gender Diversity</strong>
+        <a class="reset" href="javascript:genderChart.filterAll();dc.redrawAll();" style="display: none;">reset</a>
+        <div class="clearfix"></div>
+    </div>
+</div>  
+</div>
+<br>
+<div class="row">
+  <button onclick="arrestFunction()">Arrests Data</button>
+  <button onclick="suspensionFunction()">Suspension Data</button>
+  <button onclick="bullyingFunction()">Bullying Data</button>
+    <button onclick="expulsionFunction()">Expulsion Data</button>
+
+</div>
+<div class="row">
+    <div id="arrest-chart" style="display: none">
+        <strong>Arrests</strong>
+        <a class="reset" href="javascript:arrestChart.filterAll();dc.redrawAll();" style="display: none;">reset</a>
+        <div class="clearfix"></div>
+    </div>
+</div>
+<div class="row">
+    <div id="suspension-chart" style="display: none">
+        <strong>Suspensions</strong>
+        <a class="reset" href="javascript:suspensionChart.filterAll();dc.redrawAll();" style="display: none;">reset</a>
+        <div class="clearfix"></div>
+    </div>
+</div>
+
+
+<div class="row">
+    <div id="chart-bullying" style="display: none">
+        <strong>Bullying</strong>
+        <a class="reset" href="javascript:bullyingChart.filterAll();dc.redrawAll();" style="display: none;">reset</a>
+        <div class="clearfix"></div>
+    </div>
+</div>
+
+<div class="row">
+    <div id="expulsion-chart" style="display: none">
+        <strong>Expulsions</strong>
+        <a class="reset" href="javascript:expulsionChart.filterAll();dc.redrawAll();" style="display: none;">reset</a>
+        <div class="clearfix"></div>
+    </div>
+</div>
+
+<br>
+ <div class="row">
+<div>
+     <div style = "width: 600px;">
+        <div id = "mystats" class="dc-data-count dc-chart" style = "float: right">
+           <span class = "filter-count"></span> selected out of <span
+           class = "total-count"></span> | <a href = "javascript:dc.filterAll();
+           dc.renderAll();">Reset All</a>
+        </div>
+     </div>
+
+<div style = "clear: both; padding-top: 20px;">
+            <div>
+               <div id = "line"></div>
+            </div>
+         </div>
+    <div id="paging">
+        Showing <span id="begin"></span>-<span id="end"></span> of <span id="size"></span> <span id="totalsize"></span>
+        <input id="last" class="btn" type="Button" value="Last" onclick="javascript:last()"/>
+        <input id="next" class="btn" type="button" value="Next" onclick="javascript:next()"/>
+      </div>
+         <div style = "clear: both">
+            <div id = "mytable"   class="table table-hover dc-data-table dc-chart table-striped">
+            </div>
+         </div>
+      </div>
+</div>
+
+<!-- <div class="row"> -->
+    <!-- <table class="dc-data-table"> -->
+        <!-- <table id="dc-data-table">
+        <strong>School Data</strong>
+        <thead>
+            <tr>
+              <th>School Name</th>
+              <th>School Score</th>
+              <th>State</th>
+            </tr>
+        </thead>
+    </table>
+</div> -->
+
+<div class="clearfix"></div>
+</div>
+
+</div>
+		<script type="text/javascript" src="http://d3js.org/d3.v3.min.js"></script>
+		<script type="text/javascript" src="js/crossfilter.js"></script>
+		<script type="text/javascript" src="js/dc.js"></script>
+		<script defer type="text/javascript" src="school.js"></script>
+	</body>
+</html>
