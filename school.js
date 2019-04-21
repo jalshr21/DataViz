@@ -131,7 +131,7 @@ d3.csv('final_data.csv', function (data) {
 	})
 
 	var stateRaisedSum = states.group().reduceSum(function (d) {
-            return d["School Score"]/(25*14); 
+            return d["School Score"]/(100*14); 
         });
 
     var raceDimension = sdata.dimension(function(d){
@@ -204,9 +204,10 @@ d3.csv('final_data.csv', function (data) {
            .dimension(states)
            .group(stateRaisedSum)                
            .colors(d3.scale.quantize().range(
-           	// ['#fee0d2','#fcbba1', '#fc9272', '#fb6a4a','#ef3b2c','#cb181d','#a50f15','#67000d']))
-           	['#fee8c8', '#fdd49e','#fc8d59','#d7301f','#7f0000']))
-           .colorDomain([2.8, 4.15])
+           	['#fee0d2','#fcbba1', '#fc9272', '#fb6a4a','#ef3b2c','#cb181d','#a50f15','#67000d']))
+           	// ['#fdd49e','#fc8d59','#d7301f','#7f0000']))
+           .colorDomain([14, 16])
+           // .colorDomain([13,17])
            .colorCalculator(function (d) { return d ? usChart.colors()(d) : '#ccc'; })
            .overlayGeoJson(statesJson.features, "state", function (d) {
            return d.properties.name;
@@ -297,7 +298,7 @@ d3.csv('final_data.csv', function (data) {
     .stack(disable_male_arr, 'Disabled Male')
     .stack(disable_female_arr, 'Disabled Female')
     .elasticY(true)
-    .legend(dc.legend().x(400).y(5).itemHeight(15))
+    .legend(dc.legend().x(50).y(5).itemHeight(15))
     .margins({top: 10, right: 50, bottom: 30, left: 40})
 
     arrestChart.render();
@@ -329,7 +330,7 @@ d3.csv('final_data.csv', function (data) {
     .group(bul_sex, "Bullying based on Sex")
     .stack(bul_dis, "Bullying based on Disability")
     .stack(bul_rac, "Bullying based on Race")
-    .legend(dc.legend().x(650).y(0).itemHeight(15))
+    .legend(dc.legend().x(50).y(0).itemHeight(15))
     .elasticY(true)
     .margins({top: 10, right: 50, bottom: 30, left: 40})
     //.ordinalColors(['#7c4a71', '#98dae1', '#fd4d02'])
@@ -363,7 +364,7 @@ d3.csv('final_data.csv', function (data) {
 	   .size(Infinity)
 	   .columns(['School', 'State', 'School Score','Gender Score', 'Race Score', 'Courses Score', 'Offenses Score'])
 	   .sortBy(function (d) {
-	      return [d.PRIORITY, d["School Score"]];
+	      return [d.PRIORITY, d["School Score"]/4];
 	   })
 	   .order(d3.descending)
 	   .on('preRender', display)
