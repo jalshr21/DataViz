@@ -5,6 +5,8 @@ var schoolCount = dc.dataCount("#mystats");
 var schoolTable = dc.dataTable('#mytable');
 var arrestChart = dc.barChart("#arrest-chart");
 var suspensionChart = dc.barChart("#suspension-chart");
+var harassmentChart = dc.barChart("#harassment-chart");
+var expulsionChart = dc.barChart("#expulsion-chart");
 
 var statesJson = {"type":"FeatureCollection","features":[
 {"type":"Feature","id":"01","properties":{"name":"AL"},"geometry":{"type":"Polygon","coordinates":[[[-87.359296,35.00118],[-85.606675,34.984749],[-85.431413,34.124869],[-85.184951,32.859696],[-85.069935,32.580372],[-84.960397,32.421541],[-85.004212,32.322956],[-84.889196,32.262709],[-85.058981,32.13674],[-85.053504,32.01077],[-85.141136,31.840985],[-85.042551,31.539753],[-85.113751,31.27686],[-85.004212,31.003013],[-85.497137,30.997536],[-87.600282,30.997536],[-87.633143,30.86609],[-87.408589,30.674397],[-87.446927,30.510088],[-87.37025,30.427934],[-87.518128,30.280057],[-87.655051,30.247195],[-87.90699,30.411504],[-87.934375,30.657966],[-88.011052,30.685351],[-88.10416,30.499135],[-88.137022,30.318396],[-88.394438,30.367688],[-88.471115,31.895754],[-88.241084,33.796253],[-88.098683,34.891641],[-88.202745,34.995703],[-87.359296,35.00118]]]}},
@@ -120,7 +122,7 @@ var sdata;
 d3.csv('priority.csv', function (data) {
 	sdata = crossfilter(data);
     var all = sdata.groupAll();
- 
+ 	
 	var states = sdata.dimension(function (d) {
             return d["LEA_STATE"];
         });
@@ -156,7 +158,10 @@ d3.csv('priority.csv', function (data) {
 	});
 
 	var genderDimension = sdata.dimension(function(d){
-    	return d.Gender;
+		if (d.Gender == "TOT_ENR_M") {
+			return "Male";
+		}
+		else{return "Female";}
     });
 
 
@@ -185,13 +190,22 @@ d3.csv('priority.csv', function (data) {
 	var disable_male_suspension = schoolDim.group().reduceSum(function (d) { return d.TOT_DISCWDIS_ISS_IDEA_M; });
 	var disable_female_suspension = schoolDim.group().reduceSum(function (d) { return d.TOT_DISCWDIS_ISS_IDEA_F; });
 
+	var exp_able_males = schoolDim.group().reduceSum(function (d) { return d.EXP_ABLE_M;});
+	var exp_able_females = schoolDim.group().reduceSum(function (d) { return d.EXP_ABLE_F;});
+	var disable_males_exp = schoolDim.group().reduceSum(function (d) { return d.EXP_DIS_M;});
+	var disable_females_exp = schoolDim.group().reduceSum(function (d) { return d.EXP_DIS_M;});
+
+	var bul_sex = schoolDim.group().reduceSum(function (d) { return d.BUL_SEX; });
+	var bul_dis = schoolDim.group().reduceSum(function (d) { return d.BUL_DIS; });
+	var bul_rac = schoolDim.group().reduceSum(function (d) { return d.BUL_RAC; });
+
  	usChart.width(1000)
            .height(500)
            .dimension(states)
            .group(stateRaisedSum)                
            .colors(d3.scale.quantize().range(
            	// ['#fee0d2','#fcbba1', '#fc9272', '#fb6a4a','#ef3b2c','#cb181d','#a50f15','#67000d']))
-           	['#fee0d2', '#fb6a4a','#ef3b2c','#a50f15','#67000d']))
+           	['#fee8c8', '#fdd49e','#fc8d59','#d7301f','#7f0000']))
            .colorDomain([2.8, 4.15])
            .colorCalculator(function (d) { return d ? usChart.colors()(d) : '#ccc'; })
            .overlayGeoJson(statesJson.features, "state", function (d) {
@@ -249,7 +263,7 @@ d3.csv('priority.csv', function (data) {
     .dimension(raceDimension)
     .group(raceGroup)
     .legend(dc.legend().horizontal(true).itemWidth(38).itemHeight(17))
-    .ordinalColors(['#bf5b17','#f0027f','#7fc97f','#beaed4','#ffff99','#386cb0','#fdc086']);
+    .ordinalColors(['#ffff99','#386cb0','#fdc086', '#bf5b17','#f0027f','#7fc97f','#beaed4']);
          
     raceChart.render();
 
@@ -262,9 +276,12 @@ d3.csv('priority.csv', function (data) {
         .group(genderGroup)
         .xUnits(dc.units.ordinal)
     	.elasticY(true)
+    	.barPadding(0.3)
+        .outerPadding(0.3)
     	// .centerBar(true)
     	// .colorDomain([0,40000])
     	// .ordinalColors(['#bf5b17','#f0027f','#7fc97f','#beaed4','#ffff99','#386cb0','#fdc086'])
+    	.ordinalColors(['#fc8d59'])
     	.xAxis().tickFormat();
 
     genderChart.render();
@@ -303,6 +320,37 @@ d3.csv('priority.csv', function (data) {
 
     suspensionChart.render();
 
+    harassmentChart
+    .dimension(schoolDim)
+    .width(1000)
+    .height(200)
+    .x(d3.scale.ordinal())
+    .xUnits(dc.units.ordinal)
+    .group(bul_sex, "Bullying based on Sex")
+    .stack(bul_dis, "Bullying based on Disability")
+    .stack(bul_rac, "Bullying based on Race")
+    .legend(dc.legend().x(650).y(0).itemHeight(15))
+    .elasticY(true)
+    .margins({top: 10, right: 50, bottom: 30, left: 40})
+    //.ordinalColors(['#7c4a71', '#98dae1', '#fd4d02'])
+
+    harassmentChart.render();
+
+    expulsionChart
+    .dimension(schoolDim)
+    .width(1000)
+    .height(200)
+    .group(exp_able_males, 'Able Males')
+    .x(d3.scale.ordinal())
+    .xUnits(dc.units.ordinal)
+    .stack(exp_able_females, 'Able Female')
+    .stack(disable_males_exp, 'Disabled Male')
+    .stack(disable_females_exp, 'Disabled Female')
+    .legend(dc.legend().x(400).y(5).itemHeight(15))
+    .margins({top: 10, right: 50, bottom: 30, left: 40})
+
+    expulsionChart.render();
+
     schoolCount
 	   .dimension(sdata)
 	   .group(sdata.groupAll());
@@ -313,7 +361,7 @@ d3.csv('priority.csv', function (data) {
 	      return [data.PRIORITY, data["SCHOOL_SCORE"]];
 	   })
 	   .size(Infinity)
-	   .columns(['SCH_NAME', 'LEA_STATE', 'GENDER_SCORE', 'RACE_SCORE', 'COURSES_SCORE', 'OFFENSES_SCORE','SCHOOL_SCORE'])
+	   .columns(['SCH_NAME', 'LEA_STATE', 'SCHOOL_SCORE','GENDER_SCORE', 'RACE_SCORE', 'COURSES_SCORE', 'OFFENSES_SCORE'])
 	   .sortBy(function (d) {
 	      return [d.PRIORITY, d["SCHOOL_SCORE"]];
 	   })
@@ -322,6 +370,24 @@ d3.csv('priority.csv', function (data) {
 	   .on('preRender', update_offset)
        .on('preRedraw', update_offset)
        .on('pretransition', display);
+
+    //  var tableHeader = d3.select(".dc-table-head")
+    //   .selectAll("th");
+    // // Bind data to tableHeader selection.
+    // tableHeader = tableHeader.data(
+    //   [
+    //     {label: "SCH_NAME", field_name: "sdf"},
+    //     {label: "Classifier", field_name: "LEA_STATE"},
+    //     {label: "Misclassified", field_name: "SCHOOL_SCORE"},
+    //     {label: "True Conf", field_name: "GENDER_SCORE"},
+    //     {label: "Max Conf", field_name: "RACE_SCORE"} ,
+    //     {label: "Max Conf", field_name: "COURSES_SCORE"},
+    //     {label: "Max Conf", field_name: "OFFENSES_SCORE"} // Note Max Conf row starts off as descending
+    //   ]
+    // );   
+    // tableHeader = tableHeader.enter()
+    //   .append("th")
+    //     .text(function (d) { return d.label; });
 
 	schoolCount.render();
 	schoolTable.render();
@@ -373,6 +439,9 @@ d3.csv('priority.csv', function (data) {
   } else {
     x.style.display = "none";
   }
+  var elem = document.getElementById("raceButton");
+    if (elem.value=="Show Racial Diversity") elem.value = "Hide Racial Diversity";
+    else elem.value = "Show Racial Diversity";
 	}
 function genderFunction() 
   {
@@ -381,6 +450,9 @@ function genderFunction()
     x.style.display = "block";
   } else {
     x.style.display = "none";
+    var elem = document.getElementById("genderButton");
+    if (elem.value=="Show Gender Diversity") elem.value = "Hide Gender Diversity";
+    else elem.value = "Show Gender Diversity";
   }
 }
 function arrestFunction() 
@@ -391,6 +463,9 @@ function arrestFunction()
   } else {
     x.style.display = "none";
   }
+  var elem = document.getElementById("arrestButton");
+    if (elem.value=="Show Arrests") elem.value = "Hide Arrests";
+    else elem.value = "Show Arrests";
 	}
 function suspensionFunction() 
   {
@@ -400,5 +475,32 @@ function suspensionFunction()
   } else {
     x.style.display = "none";
   }
+  var elem = document.getElementById("suspensionButton");
+    if (elem.value=="Show Suspensions") elem.value = "Hide Suspensions";
+    else elem.value = "Show Suspensions";
 }
+function expulsionFunction() 
+  {
+  var x = document.getElementById("expulsion-chart");
+  if (x.style.display === "none") {
+    x.style.display = "block";
+  } else {
+    x.style.display = "none";
+  }
+  var elem = document.getElementById("expulsionButton");
+    if (elem.value=="Show Expulsions") elem.value = "Hide Expulsions";
+    else elem.value = "Show Expulsions";
+	}
+function harassmentFunction() 
+  {
+  var x = document.getElementById("harassment-chart");
+  if (x.style.display === "none") {
+    x.style.display = "block";
+  } else {
+    x.style.display = "none";
+  }
+  var elem = document.getElementById("harassmentButton");
+    if (elem.value=="Show Harassment & Bullying'") elem.value = "Hide Harassment & Bullying";
+    else elem.value = "Show Harassment & Bullying'";
+	}
 

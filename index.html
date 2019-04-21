@@ -14,6 +14,47 @@
       .dc-table-label {
           visibility: collapse;
         }
+    .myButton {
+  -moz-box-shadow:inset 0px 1px 0px 0px #ffffff;
+  -webkit-box-shadow:inset 0px 1px 0px 0px #ffffff;
+  box-shadow:inset 0px 1px 0px 0px #ffffff;
+  background:-webkit-gradient(linear, left top, left bottom, color-stop(0.05, #ffffff), color-stop(1, #f6f6f6));
+  background:-moz-linear-gradient(top, #ffffff 5%, #f6f6f6 100%);
+  background:-webkit-linear-gradient(top, #ffffff 5%, #f6f6f6 100%);
+  background:-o-linear-gradient(top, #ffffff 5%, #f6f6f6 100%);
+  background:-ms-linear-gradient(top, #ffffff 5%, #f6f6f6 100%);
+  background:linear-gradient(to bottom, #ffffff 5%, #f6f6f6 100%);
+  filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffff', endColorstr='#f6f6f6',GradientType=0);
+  background-color:#ffffff;
+  -moz-border-radius:6px;
+  -webkit-border-radius:6px;
+  border-radius:6px;
+  border:1px solid #dcdcdc;
+  display:inline-block;
+  cursor:pointer;
+  color:#666666;
+  font-family:Arial;
+  font-size:15px;
+  font-weight:bold;
+  padding:6px 24px;
+  text-decoration:none;
+  text-shadow:0px 1px 0px #ffffff;
+}
+.myButton:hover {
+  background:-webkit-gradient(linear, left top, left bottom, color-stop(0.05, #f6f6f6), color-stop(1, #ffffff));
+  background:-moz-linear-gradient(top, #f6f6f6 5%, #ffffff 100%);
+  background:-webkit-linear-gradient(top, #f6f6f6 5%, #ffffff 100%);
+  background:-o-linear-gradient(top, #f6f6f6 5%, #ffffff 100%);
+  background:-ms-linear-gradient(top, #f6f6f6 5%, #ffffff 100%);
+  background:linear-gradient(to bottom, #f6f6f6 5%, #ffffff 100%);
+  filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#f6f6f6', endColorstr='#ffffff',GradientType=0);
+  background-color:#f6f6f6;
+}
+.myButton:active {
+  position:relative;
+  top:1px;
+}
+
     </style>
 	<script src="uStates.js"></script> <!-- creates uStates. -->
 <script src="http://d3js.org/d3.v3.min.js"></script>
@@ -21,13 +62,14 @@
 </script>
 	<div class="container">
 
-<h2 style="text-align:center;">USA School Data 2015-16</h2>
+<h1 style="text-align:center;">USA Schools 2015-2016</h1>
 <br>
 <br>
 
 <div class="row">
 	<div id="us-chart">
-        <strong>Score Distribution by States (Saturation: School Score)</strong>
+        <h3><strong>Score Distribution by States (Saturation: School Score)</strong></h3>
+        <p>The map displays the average score for the schools in each state. Click on a state to see schools in that state. Scores range from 1 to 5, with 5 being the best.</p>
         <a class="reset" href="javascript:usChart.filterAll();dc.redrawAll();" style="display: none;">reset</a>
         <!-- <span class="reset" style="display: none;"> | Current filter: <span class="filter"></span></span> -->
 
@@ -35,38 +77,44 @@
     </div>
 </div>
 <br>
+<h3>Measuring race and gender diversity</h3>
+<p>The following section contains information regarding the race and gender diversity in the schools. Click on the button to hide/show the visualization.</p>
+<p><strong>*Note - AM - Native American, AS - Asian, BL - Black, HI - Hispanic, HP - Pacific Islander, TR - Two or more Races, WH - White.</strong></p>  
 <div class="row">
   <div class = "span2">
   </div>
   <div class="span5">
-  <button onclick="raceFunction()">Racial Diversity</button>
+  <input class ='myButton' type='button' id="raceButton" value='Hide Racial Diversity'onclick="raceFunction()"></input>
 </div>
 <div class="span5">
-  <button onclick="genderFunction()">Gender Diversity</button>
+  <input class ='myButton' type='button' id="genderButton" value='Hide Gender Diversity'onclick="genderFunction()"></input>
 </div>
 </div>
+<br>
 <div class="row">
   <div class = "span2">
   </div>
 	<div class="span5"> 
     <div id="race-chart">
-        <strong>Racial Diversity</strong>
         <a class="reset" href="javascript:raceChart.filterAll();dc.redrawAll();" style="display: none;">reset</a>
         <div class="clearfix"></div>
     </div>
   </div>
   <div class="span5"> 
     <div id="gender-chart">
-        <strong>Gender Diversity</strong>
         <a class="reset" href="javascript:genderChart.filterAll();dc.redrawAll();" style="display: none;">reset</a>
         <div class="clearfix"></div>
     </div>
 </div>  
 </div>
 <br>
+<h3>Measuring Offenses</h3>
+<p>Please click on the buttons to show the visualizations for arrests, suspensions, harrassment and expulsions for each state</p>
 <div class="row">
-  <button onclick="arrestFunction()">Arrests Data</button>
-  <button onclick="suspensionFunction()">Suspension Data</button>
+  <input class ='myButton' type='button' id="arrestButton" value='Show Arrests'onclick="arrestFunction()"></input>
+  <input class ='myButton' type='button' id="suspensionButton" value='Show Suspensions'onclick="suspensionFunction()"></input>
+  <input class ='myButton' type='button' id="expulsionButton" value='Show Expulsions'onclick="expulsionFunction()"></input>
+  <input class ='myButton' type='button' id="harassmentButton" value='Show Harassment & Bullying'onclick="harassmentFunction()"></input>
 </div>
 <div class="row">
     <div id="arrest-chart" style="display: none">
@@ -79,6 +127,22 @@
     <div id="suspension-chart" style="display: none">
         <strong>Suspensions</strong>
         <a class="reset" href="javascript:suspensionChart.filterAll();dc.redrawAll();" style="display: none;">reset</a>
+        <div class="clearfix"></div>
+    </div>
+</div>
+
+<div class="row">
+    <div id="harassment-chart" style="display: none">
+        <strong>Harassment & Bullying</strong>
+        <a class="reset" href="javascript:harassmentChart.filterAll();dc.redrawAll();" style="display: none;">reset</a>
+        <div class="clearfix"></div>
+    </div>
+</div>
+
+<div class="row">
+    <div id="expulsion-chart" style="display: none">
+        <strong>Expulsions</strong>
+        <a class="reset" href="javascript:expulsionChart.filterAll();dc.redrawAll();" style="display: none;">reset</a>
         <div class="clearfix"></div>
     </div>
 </div>
