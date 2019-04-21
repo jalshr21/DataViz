@@ -119,19 +119,19 @@ var labels = {"type":"FeatureCollection","features":[
 
 
 var sdata;
-d3.csv('priority.csv', function (data) {
+d3.csv('final_data.csv', function (data) {
 	sdata = crossfilter(data);
     var all = sdata.groupAll();
  	
 	var states = sdata.dimension(function (d) {
-            return d["LEA_STATE"];
+            return d["State"];
         });
 	var schoolname = sdata.dimension(function (d){
-		return d["SCH_NAME"];
+		return d["School"];
 	})
 
 	var stateRaisedSum = states.group().reduceSum(function (d) {
-            return d["SCHOOL_SCORE"]/(25*14); 
+            return d["School Score"]/(25*14); 
         });
 
     var raceDimension = sdata.dimension(function(d){
@@ -177,7 +177,7 @@ d3.csv('priority.csv', function (data) {
 	})
 
 	//Offenses dimensions and groups
-	var schoolDim = sdata.dimension(function (d) { return d.LEA_STATE; });
+	var schoolDim = sdata.dimension(function (d) { return d.State; });
 	var bogus_dim = {};
 	var able_male_arr = schoolDim.group().reduceSum(function (d) { return d.TOT_DISCWODIS_ARR_M; });
 	var able_female_arr = schoolDim.group().reduceSum(function (d) { return d.TOT_DISCWODIS_ARR_F; });
@@ -358,36 +358,18 @@ d3.csv('priority.csv', function (data) {
 	schoolTable
 	.dimension(schoolname)
 	   .group(function (data) {
-	      return [data.PRIORITY, data["SCHOOL_SCORE"]];
+	      return [data.PRIORITY, data["School Score"]];
 	   })
 	   .size(Infinity)
-	   .columns(['SCH_NAME', 'LEA_STATE', 'SCHOOL_SCORE','GENDER_SCORE', 'RACE_SCORE', 'COURSES_SCORE', 'OFFENSES_SCORE'])
+	   .columns(['School', 'State', 'School Score','Gender Score', 'Race Score', 'Courses Score', 'Offenses Score'])
 	   .sortBy(function (d) {
-	      return [d.PRIORITY, d["SCHOOL_SCORE"]];
+	      return [d.PRIORITY, d["School Score"]];
 	   })
 	   .order(d3.descending)
 	   .on('preRender', display)
 	   .on('preRender', update_offset)
        .on('preRedraw', update_offset)
        .on('pretransition', display);
-
-    //  var tableHeader = d3.select(".dc-table-head")
-    //   .selectAll("th");
-    // // Bind data to tableHeader selection.
-    // tableHeader = tableHeader.data(
-    //   [
-    //     {label: "SCH_NAME", field_name: "sdf"},
-    //     {label: "Classifier", field_name: "LEA_STATE"},
-    //     {label: "Misclassified", field_name: "SCHOOL_SCORE"},
-    //     {label: "True Conf", field_name: "GENDER_SCORE"},
-    //     {label: "Max Conf", field_name: "RACE_SCORE"} ,
-    //     {label: "Max Conf", field_name: "COURSES_SCORE"},
-    //     {label: "Max Conf", field_name: "OFFENSES_SCORE"} // Note Max Conf row starts off as descending
-    //   ]
-    // );   
-    // tableHeader = tableHeader.enter()
-    //   .append("th")
-    //     .text(function (d) { return d.label; });
 
 	schoolCount.render();
 	schoolTable.render();
