@@ -501,3 +501,18 @@ function harassmentFunction()
     else elem.value = "Show Harassment & Bullying";
 	}
 
+var myVar;
+
+function myFunction() {
+  myVar = setTimeout(showPage, 3000);
+}
+
+function showPage() {
+  document.getElementById("loader").style.display = "none";
+  // var x = document.getElementsByClassName("container")
+  // x.style.display = "block";
+}
+
+// $(window).load(function(){
+// 	$('.loader').fadeOut();
+// });

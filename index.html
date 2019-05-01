@@ -5,9 +5,12 @@
     <meta charset="UTF-8">
     <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="css/dc.css"/>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.2/modernizr.js"></script>
 </head>
-<body>
-    <style type="text/css">
+<body onload="myFunction()">
+<div id="loader"></div>
+<style type="text/css">
         .dc-table-head {
     background-color: rgb(252, 146, 114);
       }
@@ -54,13 +57,42 @@
   position:relative;
   top:1px;
 }
+#loader {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 1;
+  width: 150px;
+  height: 150px;
+  margin: -75px 0 0 -75px;
+  border: 16px solid #f3f3f3;
+  border-radius: 50%;
+  border-top: 16px solid #3498db;
+  width: 120px;
+  height: 120px;
+  -webkit-animation: spin 2s linear infinite;
+  animation: spin 2s linear infinite;
+}
 
-    </style>
-	<script src="uStates.js"></script> <!-- creates uStates. -->
-<script src="https://d3js.org/d3.v3.min.js"></script>
+@-webkit-keyframes spin {
+  0% { -webkit-transform: rotate(0deg); }
+  100% { -webkit-transform: rotate(360deg); }
+}
 
-</script>
-	<div class="container">
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+</style>
+
+    <script src="uStates.js"></script> <!-- creates uStates. -->
+    <script src="https://d3js.org/d3.v3.min.js"></script>
+    <script type="text/javascript" src="http://d3js.org/d3.v3.min.js"></script>
+    <script type="text/javascript" src="js/crossfilter.js"></script>
+    <script type="text/javascript" src="js/dc.js"></script>
+    <script defer type="text/javascript" src="school.js"></script>
+
+<div class="container">
 
 <h2 style="text-align:center;">USA Schools 2015-2016</h2>
 <div class="row">
@@ -198,9 +230,5 @@
 <h4 style='color: #fc8d59'><a href = "https://docs.google.com/forms/d/e/1FAIpQLScVJHuhj3BJ1zzTV0kvZGPC4lEZWwV_7eY8UuDVB611SchR0Q/viewform?embedded=true">Click here to evaluate and provide feedback</a></h4>
 </div>
 </div>
-		<script type="text/javascript" src="http://d3js.org/d3.v3.min.js"></script>
-		<script type="text/javascript" src="js/crossfilter.js"></script>
-		<script type="text/javascript" src="js/dc.js"></script>
-		<script defer type="text/javascript" src="school.js"></script>
 	</body>
 </html>
